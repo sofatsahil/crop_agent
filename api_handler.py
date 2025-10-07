@@ -139,4 +139,4 @@ def handle_intent(intent, parameters, auth):
             return "❌ Please specify location"
         return get_weather_update(location, token)
     
-    return "❌ Intent not recognized"
+    return "❌ Intent not recognized"  
