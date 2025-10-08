@@ -118,6 +118,11 @@ def main():
         comment("ℹ️ No changes to patch (diff is empty).")
         return
     patch = ask_model_for_patch(diff)
+    # --- Guard: only proceed if this looks like a valid unified diff
+    if not patch or ("diff --git" not in patch or "--- a/" not in patch or "+++ b/" not in patch or "@@" not in patch):
+    comment("⚠️ Model did not return a valid unified diff. Skipping apply.\n\n```diff\n" + (patch or "")[:65000] + "\n```")
+    sys.exit(0)
+
     if "diff --git" not in patch:
         comment("⚠️ Model did not return a valid unified diff; nothing applied.\n"
                 "You can re-run after pushing a small change or clarifying in a comment.")
