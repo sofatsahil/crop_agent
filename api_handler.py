@@ -18,11 +18,10 @@ def authenticate(username, password):
     except requests.RequestException as e:
         print("❌ Authentication failed:", e)
         return None
-
 def get_ranch_id(location, token):
-    headers = {"Authorization": f"Bearer {token}"}
     resp = requests.get(conf.RANCHES, headers=headers)
     return next((r["RanchId"] for r in resp.json() if r["Name"].lower() == location.lower()), None)
+
 
 def get_crop_type_id(crop, token):
     headers = {"Authorization": f"Bearer {token}"}
