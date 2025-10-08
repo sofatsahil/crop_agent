@@ -6,7 +6,6 @@ from tts_engine import speak
 load_dotenv()
 
 def categorize_crops(crops):
-    """Organize crops into logical categories for easier navigation"""
     categories = {
         "Vegetables": [],
         "Fruits & Nuts": [],
@@ -37,16 +36,14 @@ def categorize_crops(crops):
         elif any(keyword in crop for keyword in grain_forage_keywords):
             categories["Grains & Forage"].append(crop)
         else:
-            categories["Vegetables"].append(crop)  # Default to vegetables
+            categories["Vegetables"].append(crop)
     
-    # Sort each category
     for category in categories:
         categories[category].sort()
     
     return categories
 
 def display_menu(title, options, start_num=1):
-    """Display a numbered menu and return user selection"""
     print(f"\n{'='*50}")
     print(f"  {title}")
     print(f"{'='*50}")
@@ -64,7 +61,7 @@ def display_menu(title, options, start_num=1):
             choice_num = int(choice)
             
             if start_num <= choice_num <= len(options) + start_num - 1:
-                return choice_num - start_num  # Return 0-based index
+                return choice_num - start_num
             elif choice_num == len(options) + start_num:
                 return "back"
             elif choice_num == len(options) + start_num + 1 and start_num == 1:
@@ -75,7 +72,6 @@ def display_menu(title, options, start_num=1):
             print("❌ Please enter a valid number.")
 
 def get_recommendation_type():
-    """Get the type of recommendation the user wants"""
     recommendations = [
         "💧 Irrigation Recommendation",
         "🌱 Fertilizer Recommendation", 
@@ -96,8 +92,6 @@ def get_recommendation_type():
         return "get_weather"
 
 def get_crop_selection(crop_categories):
-    """Get crop selection through category -> specific crop menu"""
-    # First, select category
     categories = list(crop_categories.keys())
     category_choice = display_menu("Select crop category:", categories)
     
@@ -107,7 +101,6 @@ def get_crop_selection(crop_categories):
     selected_category = categories[category_choice]
     crops_in_category = crop_categories[selected_category]
     
-    # Then select specific crop
     crop_choice = display_menu(f"Select crop from {selected_category}:", crops_in_category)
     
     if crop_choice in ["exit", "back"]:
@@ -116,7 +109,6 @@ def get_crop_selection(crop_categories):
     return crops_in_category[crop_choice]
 
 def get_location_selection(locations):
-    """Get location selection from numbered list"""
     formatted_locations = [loc.title() for loc in locations]
     location_choice = display_menu("Select location:", formatted_locations)
     
@@ -130,7 +122,6 @@ def main():
     print("📋 Menu-Driven Interface for Easy Navigation")
     print("\nAuthenticating...")
 
-    # Authentication
     token = authenticate(os.getenv("CROP_USERNAME"), os.getenv("CROP_PASSWORD"))
     if not token:
         print("❌ Login failed")
@@ -138,7 +129,6 @@ def main():
 
     print("✅ Authentication successful!")
     
-    # Load data
     print("📊 Loading crop and location data...")
     crops = get_crops(token)
     locations = get_locations(token)
@@ -150,7 +140,6 @@ def main():
 
     while True:
         try:
-            # Get recommendation type
             recommendation_type = get_recommendation_type()
             
             if recommendation_type == "exit":
@@ -162,7 +151,6 @@ def main():
             
             params = {}
             
-            # Get crop if needed for irrigation or fertilizer
             if recommendation_type in ["get_irrigation", "get_fertilizer"]:
                 crop = get_crop_selection(crop_categories)
                 if crop == "exit":
@@ -173,7 +161,6 @@ def main():
                     continue
                 params["crop"] = crop.lower()
             
-            # Get location
             location = get_location_selection(locations)
             if location == "exit":
                 speak("Goodbye!")
@@ -183,7 +170,6 @@ def main():
                 continue
             params["location"] = location.lower()
             
-            # Get and display result
             print("\n🔄 Processing your request...")
             response = handle_intent(recommendation_type, params, auth)
             
@@ -205,7 +191,6 @@ def main():
             
             speak(response)
             
-            # Ask if user wants to continue
             print("\nPress Enter to continue or type 'exit' to quit...")
             continue_choice = input().strip().lower()
             if continue_choice in ["exit", "quit", "bye"]:
