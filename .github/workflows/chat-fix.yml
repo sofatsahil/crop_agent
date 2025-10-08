@@ -29,12 +29,14 @@ jobs:
       - name: Install deps
         run: pip install openai==1.* requests==2.* gitpython==3.*
 
-      - name: Run bot
+    
+          - name: Run bot
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number || inputs.pr }}
+          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
           EVENT_NAME: ${{ github.event_name }}
+          COMMENT_BODY: ${{ github.event.comment.body || '' }}  
         run: |
           python .github/scripts/chat_patch.py
